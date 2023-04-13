@@ -38,7 +38,7 @@ const Dragndrop = () => {
 							onChange={(e) => (handler.setShared(e))}
 						/>
 					</div>
-					<div className={is.square}>
+					{/* <div className={is.square}>
 						<input
 							type="file"
 							name="orderRef"
@@ -46,7 +46,7 @@ const Dragndrop = () => {
 							multiple={true}
 							onChange={(e) => handler.setOrder(e)}
 						/>
-					</div>
+					</div> */}
 				</div>
 				<div className={is.genedisplay}>
 					<div className={is.speciesDisp}>
