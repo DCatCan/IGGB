@@ -7,6 +7,39 @@ function Genecontext({ children }) {
 	const [species, setSpecies] = useState(new Array());
 	const [sharedGenomes, setSharedGenomes] = useState(new Array());
 	const [orderedGenomes, setOrderGenomes] = useState(new Array());
+	const orderStuff = (x) => {
+		if (sharedGenomes.length > 0) {
+			const findSpeciesIndex = (elem) => elem[0] === x;
+			const i = species.findIndex(findSpeciesIndex);
+			const element = species[i];
+			element[2] = true;
+			setSpecies((existing) => [
+				...existing.slice(0, i),
+				element,
+				...existing.slice(i + 1),
+			]);
+			return i;
+		} else {
+			return -1;
+		}
+	};
+	const readFiles = (theFiles) => {
+		const reader = new FileReader();
+		let name = theFiles.name.replace(/[.]\w+/, "");
+		console.log(name);
+		let index = orderStuff(name);
+		reader.onload = () => {
+			const res = reader.result.split("\n").map((row) => {
+				return row.split("\t");
+			});
+			const temp = [...orderedGenomes];
+			if (index !== -1) {
+				temp[index] = res;
+				setOrderGenomes(existing => existing);
+			}
+		};
+		reader.readAsText(theFiles);
+	};
 
 	const handler = {
 		getSpecies: () => {
@@ -22,7 +55,10 @@ function Genecontext({ children }) {
 			return sharedGenomes[x];
 		},
 		setSpeciesInfo: (x) => {
-			setSpecies(x)
+			setSpecies(x);
+		},
+		clearShared: () => {
+			setSharedGenomes([]);
 		},
 		setShared: (e) => {
 			const reader = new FileReader();
@@ -33,7 +69,7 @@ function Genecontext({ children }) {
 				const spec = res.splice(0, 1).flat();
 
 				spec.forEach((elem) =>
-					setSpecies((existing) => [...existing, [elem, true]])
+					setSpecies((existing) => [...existing, [elem, true, false]])
 				);
 				const sharedGenomes = [];
 				for (let i = 0; i < res[0].length; i++) {
@@ -49,28 +85,29 @@ function Genecontext({ children }) {
 				setSharedGenomes(sharedGenomes);
 			};
 			reader.readAsText(e.target.files[0]);
-		},
-		setOrder: (e) => {
-			const reader = new FileReader();
-			const name = e.target.files[0].name.replace(/[.]\w+/, "");
-			const index = orderStuff(name);
-
-			reader.onload = () => {
-				const res = reader.result.split("\n").map((row) => {
-					return row.split("\t");
-				});
-			};
-			reader.readAsText(e.target.files[0]);
-		},
-		orderStuff: (x) => {
-			if (sharedGenomes.length > 0) {
-				let i = species.indexOf(x);
-				if (i !== -1) {
-					return i;
-				} else {
-					return false;
+			if (orderedGenomes.length > 0) {
+				for (let index = 0; index < orderedGenomes.length; index++) {
+					const elem = orderedGenomes[index];
 				}
 			}
+		},
+		setOrder: (e) => {
+			const theFiles = e.target.files;
+			for (let index = 0; index < theFiles.length; index++) {
+				const elem = theFiles[index];
+				console.log(elem);
+				readFiles(elem);
+			}
+
+			// if (theFiles.length > 1) {
+			// 	for (let ind = 0; ind < theFiles.length; ind++) {
+
+			// 	}
+
+			// } else {
+			// 	readFiles(e.target.files[0])
+
+			// }
 		},
 	};
 

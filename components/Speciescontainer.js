@@ -7,11 +7,14 @@ const Speciescontainer = ({
 	setFilter,
 	speciesNames,
 	indeces,
+	displayFunction
 }) => {
 	const [scrollVal, setScrollVal] = useState(10);
+	
 
 	return (
 		<div className={sps.speciesContainer}>
+
 			{sharedGenomes.map((elem, index) => {
 				return (
 					<div

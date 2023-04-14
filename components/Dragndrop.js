@@ -12,25 +12,47 @@ const Dragndrop = () => {
 		setSpeciesInfo(x);
 
 	};
+	const orderHandler = (e) => {};
+
 	useEffect(() =>{
 		if (handler.getShared().length > 0) {
 			handleSpecies(handler.getSpecies());
 
 		}
 		
+		
 
-	}, [handler.getShared()])
+	}, [handler.getShared()]);
+
+
+	useEffect(()=>{
+		if (handler.getShared().length > 0) {
+			console.log(handler.getOrdered());
+			
+
+			
+		}
+
+	}, [handler.getOrdered()]) 
+
 	const handleSpeciesSubmit = (e) => {
 		e.preventDefault();
 		handler.setSpeciesInfo(speciesInfo);
 		router.push('/');
 	}
-	const orderHandler = (e) => {};
+
+	const handleClear = (e) => {
+		e.preventDefault()
+		handler.clearShared();
+		setSpeciesInfo([]);
+	}
+
 	return (
 		<>
 			<form id={is["file-upload"]} onSubmit={handleSpeciesSubmit}>
 				<div className={is.input_container}>
 					<div className={is.square}>
+						<h2>Shared Input</h2>
 						<input
 							type="file"
 							name="sharedRef"
@@ -39,14 +61,15 @@ const Dragndrop = () => {
 						/>
 					</div>
 					<div className={is.square}>
-						{/* <input
+						<h2>Ordered Input</h2>
+						<input
 							type="file"
 							name="orderRef"
 							id="orderInput"
 							multiple={true}
 							onChange={(e) => handler.setOrder(e)}
-						/> */}
-						<p>Species Order still in progress...</p>
+						/>
+						<p>Species Order still in progress...<br />Not yet functional</p>
 					</div>
 				</div>
 				<div className={is.genedisplay}>
@@ -59,7 +82,7 @@ const Dragndrop = () => {
 						}
 					</div>
 					<div className={is.buttonContainer}>
-						<button type="reset">Clear</button>
+						<button onClick={handleClear}>Clear</button>
 						<button type="submit">Submit</button>
 					</div>
 				</div>
@@ -96,6 +119,7 @@ function DisplayInput({ speciesInfo, setSpeciesInfo }) {
 
 function SpeciesName({ index, speciesInfo, setSpeciesInfo }) {
 	const pClass = speciesInfo[1] ? is.marked : null;
+
 	const handleClick = () => {
 		setSpeciesInfo((existingItems) => {
 			const element = [speciesInfo[0], !speciesInfo[1]]
@@ -112,8 +136,9 @@ function SpeciesName({ index, speciesInfo, setSpeciesInfo }) {
 				className={pClass}
 				key={index}
 				onClick={handleClick}>
-				{index+1}{". "}
-				{speciesInfo[0]}
+				{index}{". "}
+				{speciesInfo[0]} 
+				{speciesInfo[2] ? " * " : null}
 			</p>
 		</>
 	);

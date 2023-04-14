@@ -13,9 +13,9 @@ export default function Home() {
 	});
 	const [speciesOut, setSpeciesOut] = useState([]);
 	const [indeces, setIndeces] = useState([]);
-	
+	const [info, setInfo] = useState();
 
-	
+
 	useEffect(() => {
 		function cleanse(x) {
 			//picks out the species that were chosen
@@ -39,7 +39,7 @@ export default function Home() {
 					geneFilter.GeneSelected < geneFilter.maxGenes
 						? 0
 						: geneFilter.GeneSelected - Math.ceil(geneFilter.maxGenes / 2);
-	
+
 				for (let index = 0; index < speciesList.length; index++) {
 					const ilement = speciesList[index];
 					let temp = [];
@@ -48,15 +48,18 @@ export default function Home() {
 						temp.push(ilement[jndex]);
 						jndex++;
 					}
-	
+
 					listSet.push(temp);
 				}
 			}
 			return listSet;
 		}
+		const handlerOrder = (filteredGenomes) => {};
+
 		if (handler.getSpecies().length > 0) {
 			const a1 = cleanse(handler.getSpecies()); // get the relevant species selected;
 			const out = rdyUp(a1); // get the species rdy for display, shave away genomes that the speceis do not share
+
 			setSpeciesOut(out);
 		}
 	}, [handler.getSpecies(), geneFilter]);
@@ -76,3 +79,16 @@ export default function Home() {
 		</div>
 	);
 }
+
+const infoLabels = [
+	"Position",
+	"NAME",
+	"ORIENTATION",
+	"START COORDINATE",
+	"STOP COORDINATE",
+	"ON/OFF",
+	"CHROMOSOME/CONTIG/SCAFFOLD NUMBER",
+	"SHORT NAME",
+	"COORDINATES",
+	"NOTES",
+];
