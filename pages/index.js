@@ -7,7 +7,7 @@ import Filter from "@/components/Filter";
 export default function Home() {
 	const handler = useContext(Genomehandler);
 	const [geneFilter, setGeneFilter] = useState({
-		maxGenes: 15,
+		maxGenes: 5,
 		SpeciesSelected: 0,
 		GeneSelected: 0,
 	});
