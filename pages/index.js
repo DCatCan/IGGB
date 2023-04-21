@@ -7,7 +7,7 @@ import Filter from "@/components/Filter";
 export default function Home() {
 	const handler = useContext(Genomehandler);
 	const [geneFilter, setGeneFilter] = useState({
-		maxGenes: 10,
+		maxGenes: 15,
 		SpeciesSelected: 0,
 		GeneSelected: 0,
 	});
@@ -15,6 +15,33 @@ export default function Home() {
 	const [indeces, setIndeces] = useState([]);
 	const [info, setInfo] = useState();
 
+	
+	const handleGeneButton = (information, boolVar) => {
+		if (boolVar) {
+			setInfo(
+				<div className={`${sps["GenInfo"]}`}>
+					{information.map((elem, i) => {
+						if (i === information.length - 1) {
+							return;
+						}
+						return (
+							<p>
+								{infoLabels[i]} = {elem}
+							</p>
+						);
+					})}
+					<button
+						onClick={() => {
+							setInfo();
+						}}>
+						Close
+					</button>
+				</div>
+			);
+		} else {
+			setInfo();
+		}
+	};
 
 	useEffect(() => {
 		function cleanse(x) {
@@ -54,7 +81,6 @@ export default function Home() {
 			}
 			return listSet;
 		}
-		const handlerOrder = (filteredGenomes) => {};
 
 		if (handler.getSpecies().length > 0) {
 			const a1 = cleanse(handler.getSpecies()); // get the relevant species selected;
@@ -66,11 +92,15 @@ export default function Home() {
 
 	return (
 		<div className={sps.container}>
+			{info}
 			<Speciescontainer
 				sharedGenomes={speciesOut}
 				setFilter={setGeneFilter}
 				indeces={indeces}
 				speciesNames={handler.getSpecies()}
+				infoDisplay={handleGeneButton}
+				filter={geneFilter}
+				orderGenomes={handler.getOrdered()}
 			/>
 			<Filter
 				geneFilter={geneFilter}
@@ -79,6 +109,9 @@ export default function Home() {
 		</div>
 	);
 }
+
+
+
 
 const infoLabels = [
 	"Position",

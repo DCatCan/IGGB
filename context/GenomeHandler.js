@@ -26,7 +26,6 @@ function Genecontext({ children }) {
 	const readFiles = (theFiles) => {
 		const reader = new FileReader();
 		let name = theFiles.name.replace(/[.]\w+/, "");
-		console.log(name);
 		let index = orderStuff(name);
 		reader.onload = () => {
 			const res = reader.result.split("\n").map((row) => {
@@ -34,8 +33,11 @@ function Genecontext({ children }) {
 			});
 			const temp = [...orderedGenomes];
 			if (index !== -1) {
-				temp[index] = res;
-				setOrderGenomes(existing => existing);
+				setOrderGenomes(existing => [
+					...existing.slice(0,index),
+					existing[index] = res,
+					...existing.slice(index+1)
+				]);
 			}
 		};
 		reader.readAsText(theFiles);
@@ -59,6 +61,7 @@ function Genecontext({ children }) {
 		},
 		clearShared: () => {
 			setSharedGenomes([]);
+			setSpecies([]);
 		},
 		setShared: (e) => {
 			const reader = new FileReader();
@@ -95,7 +98,6 @@ function Genecontext({ children }) {
 			const theFiles = e.target.files;
 			for (let index = 0; index < theFiles.length; index++) {
 				const elem = theFiles[index];
-				console.log(elem);
 				readFiles(elem);
 			}
 
