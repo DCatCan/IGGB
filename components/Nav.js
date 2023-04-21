@@ -22,7 +22,7 @@ const Nav = (props) => {
 					</li>
 					<li>
 						<Link
-							href="/userinput"
+							href="/Userinput"
 							onClick={handleClick}>
 							Input
 						</Link>

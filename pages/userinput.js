@@ -3,7 +3,7 @@ import { Genomehandler } from "@/context/GenomeHandler";
 import { useRouter } from "next/router";
 import is from "@/styles/Inputs.module.css";
 
-const userinput = () => {
+const Userinput = () => {
 	const handler = useContext(Genomehandler);
 	const [speciesInfo, setSpeciesInfo] = useState([]);
 	const router = useRouter();
@@ -35,6 +35,7 @@ const userinput = () => {
 		handler.clearShared();
 		setSpeciesInfo([]);
 	};
+
 
 	return (
 		<>
@@ -140,4 +141,4 @@ function SpeciesName({ index, speciesInfo, setSpeciesInfo }) {
 	);
 }
 
-export default userinput;
+export default Userinput;

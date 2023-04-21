@@ -24,6 +24,7 @@ const Speciescontainer = ({
 							<h3>{speciesNames[indeces[index]]}</h3>
 						</div>
 						<Species
+						key={`species${index}`}
 							genes={elem}
 							setFilter={setFilter}
 							infoDisplay={infoDisplay}

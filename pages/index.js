@@ -17,6 +17,7 @@ export default function Home() {
 
 	
 	const handleGeneButton = (information, boolVar) => {
+		
 		if (boolVar) {
 			setInfo(
 				<div className={`${sps["GenInfo"]}`}>
@@ -25,7 +26,7 @@ export default function Home() {
 							return;
 						}
 						return (
-							<p>
+							<p key={i}>
 								{infoLabels[i]} = {elem}
 							</p>
 						);
@@ -44,9 +45,10 @@ export default function Home() {
 	};
 
 	useEffect(() => {
+		const handl = handler;
 		function cleanse(x) {
 			//picks out the species that were chosen
-			const sharedGenomes = handler.getShared();
+			const sharedGenomes = handl.getShared();
 			const temp = [];
 			x.forEach((element, index) => {
 				const state = element[1];
@@ -82,8 +84,8 @@ export default function Home() {
 			return listSet;
 		}
 
-		if (handler.getSpecies().length > 0) {
-			const a1 = cleanse(handler.getSpecies()); // get the relevant species selected;
+		if (handl.getSpecies().length > 0) {
+			const a1 = cleanse(handl.getSpecies()); // get the relevant species selected;
 			const out = rdyUp(a1); // get the species rdy for display, shave away genomes that the speceis do not share
 
 			setSpeciesOut(out);
