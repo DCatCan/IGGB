@@ -12,7 +12,6 @@ const Speciescontainer = ({
 	filter,
 }) => {
 	const [scrollVal, setScrollVal] = useState(10);
-
 	return (
 		<div className={sps.speciesContainer}>
 			{sharedGenomes.map((elem, index) => {
@@ -40,8 +39,7 @@ const Speciescontainer = ({
 
 const Species = ({ genes, setFilter, infoDisplay, OG, filter }) => {
 	const color = randomColor();
-	const [genesOut, SetGenesOut] = useState(genes);
-
+	
 	
 	useEffect(() => {
 		const makeTrees = () => {
@@ -69,7 +67,7 @@ const Species = ({ genes, setFilter, infoDisplay, OG, filter }) => {
 
 	return (
 		<div className={sps.species_container}>
-			{genesOut.map((elem, index) => (
+			{genes.map((elem, index) => (
 				<Genome
 					gene={elem}
 					key={index}

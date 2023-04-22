@@ -5,7 +5,7 @@ import arrow from "@/public/down-arrow.png";
 import { Input } from "postcss";
 import { Genomehandler } from "@/context/GenomeHandler";
 
-function Filter({ geneFilter, setGeneFilter }) {
+function Filter({ geneFilter, setFilter }) {
 	const [active, setActive] = useState(false);
 	const ContainerClass = active ? sps.hide : null;
 	const buttonClass = active ? sps.up : null;
@@ -28,49 +28,47 @@ function Filter({ geneFilter, setGeneFilter }) {
 			{
 				<FormFilter
 					geneFilter={geneFilter}
-					setGeneFilter={setGeneFilter}
+					setFilter={setFilter}
 				/>
 			}
 		</div>
 	);
 }
 
-function FormFilter({ geneFilter, setGeneFilter }) {
+function FormFilter({ geneFilter, setFilter }) {
 	const handler = useContext(Genomehandler);
 	const [genes, setGenes] = useState([]);
 	const [species, setSpecies] = useState([]);
-	const speciesRef = useRef(null)
-
+	const speciesRef = useRef(null);
 	const handleSpeciesChange = (e) => {
 		const { value } = e.target;
 		const findSpecies = (elem) => elem[0] === value;
 		const ind = handler.getSpecies().findIndex(findSpecies);
 		setGenes(handler.getGenomeSet(ind));
 	};
-	const handleAddedData = () => {
-		setSpecies(handler.getSpecies().filter((elem) => elem[1]));
-	};
+
 	useEffect(() => {
+		const handleAddedData = () => {
+			setSpecies(handler.getSpecies().filter((elem) => elem[1]));
+		};
 		if (handler.getSpecies().length > 0) {
 			handleAddedData();
-			
 		}
 	}, [handler.getShared()]);
 	useEffect(() => {
-		if (species.length > 0 || genes.length > 0 ) {
-
+		if (species.length > 0 || genes.length > 0) {
 			const value = species[0][0];
 			const findSpecies = (elem) => elem[0] === value;
 			const ind = handler.getSpecies().findIndex(findSpecies);
-			setGenes(handler.getGenomeSet(ind))
+			setGenes(handler.getGenomeSet(ind));
 		}
-	}, [species])
+	}, [species]);
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		for (let index = 0; index < e.target.length - 1; index++) {
 			const { name, value } = e.target[index];
-			setGeneFilter((existing) => {
+			setFilter((existing) => {
 				return { ...existing, [name]: value };
 			});
 		}

@@ -15,16 +15,13 @@ export default function Home() {
 	const [indeces, setIndeces] = useState([]);
 	const [info, setInfo] = useState();
 
-	
 	const handleGeneButton = (information, boolVar) => {
-		
+		//temp, fix it back!
+
 		if (boolVar) {
 			setInfo(
 				<div className={`${sps["GenInfo"]}`}>
 					{information.map((elem, i) => {
-						if (i === information.length - 1) {
-							return;
-						}
 						return (
 							<p key={i}>
 								{infoLabels[i]} = {elem}
@@ -60,29 +57,26 @@ export default function Home() {
 			return temp;
 		}
 		function rdyUp(speciesList) {
-			//removes any non shared genomes
 			const listSet = [];
-			let start;
-			if (speciesList.length > 0) {
-				start =
-					geneFilter.GeneSelected < geneFilter.maxGenes
-						? 0
-						: geneFilter.GeneSelected - Math.ceil(geneFilter.maxGenes / 2);
-
-				for (let index = 0; index < speciesList.length; index++) {
-					const ilement = speciesList[index];
-					let temp = [];
-					let jndex = start;
-					while (temp.length < geneFilter.maxGenes) {
-						temp.push(ilement[jndex]);
-						jndex++;
-					}
-
-					listSet.push(temp);
+			let start =
+				geneFilter.GeneSelected < geneFilter.maxGenes
+					? 0
+					: parseInt(geneFilter.GeneSelected);
+			for (let index = 0; index < speciesList.length; index++) {
+				const ilement = speciesList[index];
+				let temp = [];
+				let jndex = start;
+				while (temp.length < parseInt(geneFilter.maxGenes)) {
+					temp.push(ilement[jndex]);
+					jndex++;
 				}
+
+				listSet.push(temp);
 			}
+
 			return listSet;
 		}
+		console.log(handl.getSpecies());
 
 		if (handl.getSpecies().length > 0) {
 			const a1 = cleanse(handl.getSpecies()); // get the relevant species selected;
@@ -90,6 +84,8 @@ export default function Home() {
 
 			setSpeciesOut(out);
 		}
+
+		return () => console.log("unmounted after filter or species");
 	}, [handler.getSpecies(), geneFilter]);
 
 	return (
@@ -106,14 +102,11 @@ export default function Home() {
 			/>
 			<Filter
 				geneFilter={geneFilter}
-				setGeneFilter={setGeneFilter}
+				setFilter={setGeneFilter}
 			/>
 		</div>
 	);
 }
-
-
-
 
 const infoLabels = [
 	"Position",
