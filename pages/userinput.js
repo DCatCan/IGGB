@@ -6,14 +6,13 @@ import is from "@/styles/Inputs.module.css";
 const Userinput = () => {
 	const handler = useContext(Genomehandler);
 	const [speciesInfo, setSpeciesInfo] = useState([]);
+	const [activeIndeces, setActiveIndeces] = useState([]);
 	const router = useRouter();
 
-	const handleSpecies = (x) => {
-		setSpeciesInfo(x);
-	};
-	const orderHandler = (e) => {};
-
 	useEffect(() => {
+		const handleSpecies = (x) => {
+			setSpeciesInfo(x);
+		};
 		if (handler.getShared().length > 0) {
 			handleSpecies(handler.getSpecies());
 		}
@@ -27,6 +26,7 @@ const Userinput = () => {
 	const handleSpeciesSubmit = (e) => {
 		e.preventDefault();
 		handler.setSpeciesInfo(speciesInfo);
+		handler.setActiveIndx(speciesInfo);
 		router.push("/");
 	};
 
@@ -35,7 +35,6 @@ const Userinput = () => {
 		handler.clearShared();
 		setSpeciesInfo([]);
 	};
-
 
 	return (
 		<>
@@ -114,16 +113,16 @@ function DisplayInput({ speciesInfo, setSpeciesInfo }) {
 
 function SpeciesName({ index, speciesInfo, setSpeciesInfo }) {
 	const pClass = speciesInfo[1] ? is.marked : null;
-
 	const handleClick = () => {
 		setSpeciesInfo((existingItems) => {
-			const element = [speciesInfo[0], !speciesInfo[1]];
+			const element = [speciesInfo[0], !speciesInfo[1], speciesInfo[2]];
 			return [
 				...existingItems.slice(0, index),
 				element,
 				...existingItems.slice(index + 1),
 			];
 		});
+		
 	};
 
 	return (

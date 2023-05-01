@@ -1,34 +1,132 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import sps from "../styles/species.module.css";
 import randomColor from "randomcolor";
+import { Genomehandler } from "@/context/GenomeHandler";
+import { stringify } from "postcss";
 
 const Speciescontainer = ({
-	sharedGenomes,
 	setFilter,
-	speciesNames,
-	indeces,
-	infoDisplay,
-	orderGenomes,
+	infoDisplay: infoDisplayFunction,
 	filter,
 }) => {
+	const handler = useContext(Genomehandler);
+	const sharedGenomes = handler.getShared();
+	const speciesNames = handler.getSpecies();
+	const activeSpecies = handler.getIndeces(); //indeces of the active species
+
 	const [scrollVal, setScrollVal] = useState(10);
+	const [speciesOut, setSpeciesOut] = useState([]);
+	const [sharedIndeces, setSharedIndeces] = useState([]);
+	const [info, setInfo] = useState();
+
+	const color = randomColor({
+		luminosity: "light",
+		format: "rgb",
+		count: parseInt(filter.maxGenes),
+	});
+	//-----------------------------------------------
+
+	const re_arrangeFor = (species) => {};
+	const orderIndeces = (focusedSet) => {
+		//Order the indeces after the focused species.
+
+		//remove genes that arent relevant
+		const sharedGenesOnly = focusedSet.filter();
+		console.log(sharedGenesOnly);
+
+		//get the orderedFile that you added for this specific species.
+
+		const IndecesPairs = [];
+	};
+
+	const swapElem = (array, index1, index2) => {
+		[array[index1], array[index2]] = [array[index2], array[index1]];
+	};
+
+	useEffect(() => {
+		function getActiveSpecies(x) {
+			//picks out the species that were chosen
+			const temp = [];
+			x.forEach((element, index) => {
+				const isActive = element[1];
+				if (isActive) {
+					temp.push(sharedGenomes[index]);
+				}
+			});
+			return temp;
+		}
+		function rdyUp(speciesList) {
+			const listSet = [];
+			let startGene = parseInt(filter.GeneSelected);
+			let speciesSelected = parseInt(filter.SpeciesSelected); // the index on the activeSpeciesList
+			let maxGenes = parseInt(filter.maxGenes);
+
+			for (let index = 0; index < speciesList.length; index++) {
+				const ilement = speciesList[index];
+				const currentSpecies = activeSpecies[index]; // current species Index
+
+				let temp = [];
+				let jndex = startGene;
+				while (temp.length < maxGenes) {
+					temp.push(ilement[jndex]);
+					jndex++;
+				}
+
+				listSet.push(temp);
+			}
+
+			const sharedInd = new Array();
+
+			// get the shared indeces to later re-arrange when we focus with orderedFile
+			for (let i = startGene; i < startGene + maxGenes; i++) {
+				sharedInd.push(i);
+			}
+
+			setSharedIndeces(sharedInd);
+
+			console.log(activeSpecies);
+			// list of genomes from a species
+			//check if the species is the one thats focused and of it has ordered genes available
+			const isFocus =
+				currentSpecies === parseInt(filter.SpeciesSelected) ? true : false;
+			//arrange the the focused genes in order (remember if they are in different chrm different colors)
+			if (isFocus && orderIndeces[activeSpecies].length > 0) {
+			}
+			// create an indexList after with the same swaps as the focused one!
+
+			return listSet;
+		}
+
+		if (speciesNames.length > 0) {
+			const a1 = getActiveSpecies(speciesNames); // get the relevant species selected;
+			const out = rdyUp(a1); // get the species rdy for display, shave away genomes that the speceis do not share
+			setSpeciesOut(out);
+		}
+
+		return () => console.log("unmount Container class");
+	}, [speciesNames, filter]);
+
+	//-----------------------------------------------------------------------------------------------
+
 	return (
 		<div className={sps.speciesContainer}>
-			{sharedGenomes.map((elem, index) => {
+			{speciesOut.map((elem, index) => {
+				let speciesInf = handler.getSpecificSpecies(activeSpecies[index]);
 				return (
 					<div
 						className={sps.species}
 						key={`s${index}`}>
 						<div className={sps.speciesLabel}>
-							<h3>{speciesNames[indeces[index]]}</h3>
+							<h3>{speciesInf[0]}</h3>
 						</div>
 						<Species
-						key={`species${index}`}
+							key={`species${index}`}
 							genes={elem}
 							setFilter={setFilter}
-							infoDisplay={infoDisplay}
+							infoDisplay={infoDisplayFunction}
 							filter={filter}
-							OG={orderGenomes[index]}
+							OG={handler.getOrderOf(index)}
+							color={color}
 						/>
 					</div>
 				);
@@ -37,33 +135,32 @@ const Speciescontainer = ({
 	);
 };
 
-const Species = ({ genes, setFilter, infoDisplay, OG, filter }) => {
-	const color = randomColor();
-	
-	
+const Species = ({ genes, setFilter, infoDisplay, OG, filter, color }) => {
+	const [relevantIndeces, setRelevantIndeces] = useState([]);
 	useEffect(() => {
-		const makeTrees = () => {
-			const allTrees = [];
-
-
-			const sharedGenesOnly = genes.filter((elem) => elem !== "---" && elem !== "---\r");
+		const setAllIndeces = () => {
+			const sharedGenesOnly = genes.filter(
+				(elem) => elem !== "---" && elem !== "---\r"
+			);
 			console.log(sharedGenesOnly);
-		
-			sharedGenesOnly.forEach(elem => {
-				const isElem = genomeSet => genomeSet[0] === elem;
+
+			sharedGenesOnly.forEach((elem) => {
+				const isElem = (genomeSet) => genomeSet[0] === elem;
 				const iTemp = OG.findIndex(isElem);
+
 				console.log(iTemp);
-
-
-
+				setRelevantIndeces(iTemp);
 			});
-			return  allTrees;
-		}
+		};
 		if (OG) {
-			makeTrees();
+			setAllIndeces();
 		}
-		return () => console.log("Unmount");
-	},[OG]);
+		return () => console.log("unmount Species Class");
+	}, [OG]);
+
+	const getAreaGenes = (a, b, c) => {
+		return [OG.slice(a, b), OG.slice(b, c)];
+	};
 
 	return (
 		<div className={sps.species_container}>
@@ -71,35 +168,37 @@ const Species = ({ genes, setFilter, infoDisplay, OG, filter }) => {
 				<Genome
 					gene={elem}
 					key={index}
-					color={color}
+					color={color[index]}
 					infoDisplay={infoDisplay}
+					allIndeces={relevantIndeces}
 				/>
 			))}
 		</div>
 	);
 };
 
-function Genome({ gene, color, infoDisplay, OG }) {
-	const [moop, setMoop] = useState("hello");
+function Genome({ gene, color, infoDisplay, allIndeces }) {
+	const [out, setOut] = useState();
 	useEffect(() => {
 		if (gene.length > 0) {
-			gene !== "---" && gene !== "---\r" ? setMoop(
-				<button
-					className={sps.genome}
-					style={{ backgroundColor: color }}
-					onClick={infoDisplay()}>
-					<p>{gene}</p>
-				</button>
-			) : setMoop(
-				<div
-					className={sps.genome}
-					style={{ backgroundColor: "rgba(0,0,0,0.1)" }}></div>
-			);
+			gene !== "---" && gene !== "---\r"
+				? setOut(
+						<button
+							className={sps.genome}
+							style={{ backgroundColor: color }}
+							onClick={infoDisplay()}>
+							<p>{gene}</p>
+						</button>
+				  )
+				: setOut(
+						<div
+							className={sps.genome}
+							style={{ backgroundColor: "rgba(0,0,0,0.1)" }}></div>
+				  );
 		}
 	}, [gene]);
 
-
-	return moop;
+	return <div>{out}</div>;
 }
 
 export default Speciescontainer;

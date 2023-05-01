@@ -42,9 +42,7 @@ function FormFilter({ geneFilter, setFilter }) {
 	const speciesRef = useRef(null);
 	const handleSpeciesChange = (e) => {
 		const { value } = e.target;
-		const findSpecies = (elem) => elem[0] === value;
-		const ind = handler.getSpecies().findIndex(findSpecies);
-		setGenes(handler.getGenomeSet(ind));
+		setGenes(handler.getGenomeSet(value));
 	};
 
 	useEffect(() => {
@@ -57,10 +55,8 @@ function FormFilter({ geneFilter, setFilter }) {
 	}, [handler.getShared()]);
 	useEffect(() => {
 		if (species.length > 0 || genes.length > 0) {
-			const value = species[0][0];
-			const findSpecies = (elem) => elem[0] === value;
-			const ind = handler.getSpecies().findIndex(findSpecies);
-			setGenes(handler.getGenomeSet(ind));
+			const value = species[0][3];
+			setGenes(handler.getGenomeSet(value));
 		}
 	}, [species]);
 
@@ -68,11 +64,11 @@ function FormFilter({ geneFilter, setFilter }) {
 		e.preventDefault();
 		for (let index = 0; index < e.target.length - 1; index++) {
 			const { name, value } = e.target[index];
+
 			setFilter((existing) => {
 				return { ...existing, [name]: value };
 			});
 		}
-		console.log(geneFilter);
 	};
 
 	return (
@@ -103,7 +99,7 @@ function FormFilter({ geneFilter, setFilter }) {
 						{species.map((elem, index) => {
 							return (
 								<option
-									value={elem[0]}
+									value={elem[3]}
 									key={`SpeciesSel${index}`}>
 									{elem[0]}
 								</option>
