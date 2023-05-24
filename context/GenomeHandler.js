@@ -10,9 +10,14 @@ function Genecontext({ children }) {
 	const [activeIndeces, setActiveIndeces] = useState([]);
 	const orderStuff = (x) => {
 		if (sharedGenomes.length > 0) {
-			const findSpeciesIndex = (elem) => elem[0] === x;
+			const findSpeciesIndex = (elem) => elem[0] === x && elem[2] === false;
 			const i = species.findIndex(findSpeciesIndex);
-			const element = species[i];
+			let element;
+			if (i !== -1) {
+				element = species[i];
+			} else {
+				return -1;
+			}
 			element[2] = true;
 			console.log(element);
 			setSpecies((existing) => [
@@ -35,10 +40,10 @@ function Genecontext({ children }) {
 			});
 			const temp = [...orderedGenomes];
 			if (index !== -1) {
-				setOrderGenomes(existing => [
-					...existing.slice(0,index),
-					existing[index] = res,
-					...existing.slice(index+1)
+				setOrderGenomes((existing) => [
+					...existing.slice(0, index),
+					(existing[index] = res),
+					...existing.slice(index + 1),
 				]);
 			}
 		};
@@ -58,12 +63,11 @@ function Genecontext({ children }) {
 		getOrdered: () => {
 			return orderedGenomes;
 		},
-		getIndeces: () =>{
+		getIndeces: () => {
 			return activeIndeces;
-		}
-		,
+		},
 		getOrderOf: (x) => {
-			return orderedGenomes[x]
+			return orderedGenomes[x];
 		},
 		getGenomeSet: (x) => {
 			return sharedGenomes[x];
@@ -85,8 +89,10 @@ function Genecontext({ children }) {
 				const spec = res.splice(0, 1).flat();
 
 				spec.forEach((elem, index) =>
-
-					setSpecies((existing) => [...existing, [elem.match(/./g).join(''), true, false, index]])
+					setSpecies((existing) => [
+						...existing,
+						[elem.match(/./g).join(""), true, false, index],
+					])
 				);
 				const sharedGenomes = [];
 				for (let i = 0; i < res[0].length; i++) {
@@ -102,23 +108,42 @@ function Genecontext({ children }) {
 				setSharedGenomes(sharedGenomes);
 			};
 			reader.readAsText(e.target.files[0]);
-		
 		},
 		setActiveIndx: (x) => {
-			setActiveIndeces([])
+			setActiveIndeces([]);
 			x.forEach((element, index) => {
 				const isActive = element[1];
 				if (isActive) {
-					setActiveIndeces(existing => [...existing, index]);
+					setActiveIndeces((existing) => [...existing, index]);
 				}
 			});
 		},
 		setOrder: (e) => {
 			const theFiles = e.target.files;
+
+			const readF = (elem) => {
+				const reader = new FileReader();
+				let name = elem.name.replace(/[.]\w+/, "");
+				let index = orderStuff(name);
+				reader.onload = () => {
+					const res = reader.result.split("\n").map((row) => {
+						return row.split("\t");
+					});
+					if (index !== -1) {
+						setOrderGenomes((existing) => [
+							...existing.slice(0, index),
+							(existing[index] = res),
+							...existing.slice(index + 1),
+						]);
+					}
+				};
+				reader.readAsText(elem);
+			};
 			for (let index = 0; index < theFiles.length; index++) {
 				const elem = theFiles[index];
-				readFiles(elem);
+				readF(elem);
 			}
+			console.log(orderedGenomes);
 
 			// if (theFiles.length > 1) {
 			// 	for (let ind = 0; ind < theFiles.length; ind++) {

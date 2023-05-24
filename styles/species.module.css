@@ -44,6 +44,9 @@
   align-items: flex-end;
   width: 100%;
 }
+.species .chosen {
+  background-color: rgba(245, 245, 141, 0.608);
+}
 .species .speciesLabel {
   display: flex;
   width: 100%;
@@ -51,24 +54,33 @@
 .species .speciesLabel h3 {
   position: sticky;
   left: 10px;
+  margin-top: 10px;
 }
 
 .genome {
   min-width: 100px;
   min-height: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 10px;
+  display: block;
+  border-radius: 5px;
   margin-inline: 4px;
-  font-size: 10px;
   overflow: hidden;
 }
-
+.genome div {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 3px 4px;
+  background-color: rgba(255, 255, 255, 0.425);
+}
+.genome div p {
+  font-size: 10px;
+}
 .filterContainer {
   width: 90%;
   height: 140px;
-  background-color: rgba(48, 56, 126, 0.619);
+  background-color: rgba(72, 70, 21, 0.619);
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -109,7 +121,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr 2fr 2fr;
   grid-template-rows: 2fr 1fr 2fr;
-  grid-template-areas: ". . . ." "maxOutput . speciesSel genomeSel " ". . . submit";
+  grid-template-areas: ". . . ." "maxOutput organized speciesSel genomeSel " ". . . submit";
   gap: 1em;
   padding: 1em 1em;
   justify-content: center;
@@ -124,7 +136,7 @@
   flex-direction: column;
   justify-content: center;
   height: 60px;
-  background-color: rgb(45, 92, 173);
+  background-color: rgb(76, 83, 95);
   padding: 10px 5px;
   border-radius: 5px;
 }
@@ -142,6 +154,16 @@
 .filterForm .GeneSelected {
   grid-area: genomeSel;
   color: black;
+}
+.filterForm .organize {
+  grid-area: organized;
+}
+.filterForm .organize input {
+  align-self: baseline;
+  margin-left: 1em;
+  margin-top: 4px;
+  height: 20px;
+  width: 20px;
 }
 .filterForm select {
   width: 100%;
@@ -162,21 +184,23 @@
 }
 
 .GenInfo {
-  width: 30%;
+  width: 40%;
+  height: 300px;
   padding: 1em;
   position: fixed;
-  top: 5%;
+  top: 10%;
   left: 5%;
-  background-color: rgb(233, 237, 241);
+  background-color: rgba(204, 204, 204, 0.916);
   z-index: 999;
   padding: 1;
   display: flex;
   flex-direction: column;
   border-radius: 5px;
+  justify-content: space-between;
 }
 .GenInfo button {
   padding: 1em 10px;
-  align-self: right;
+  align-self: bottom;
   background-color: white;
   border: 0;
 }
@@ -193,8 +217,8 @@
 
 @media screen and (max-width: 940px) {
   .filterForm {
-    grid-template-columns: 1fr 2fr 2fr;
-    grid-template-rows: 2fr 1fr 2fr;
-    grid-template-areas: ". . ." "maxOutput speciesSel genomeSel " ". .  submit";
+    overflow-y: scroll;
+    grid-template-columns: 1fr;
+    grid-template-areas: "maxOutput" "speciesSel" "genomeSel" "organized" "submit";
   }
 }/*# sourceMappingURL=species.module.css.map */

@@ -2,45 +2,32 @@ import { useEffect, useState, useContext } from "react";
 import sps from "../styles/species.module.css";
 import randomColor from "randomcolor";
 import { Genomehandler } from "@/context/GenomeHandler";
-import { stringify } from "postcss";
+import { loadGetInitialProps } from "next/dist/shared/lib/utils";
 
-const Speciescontainer = ({
-	setFilter,
-	infoDisplay: infoDisplayFunction,
-	filter,
-}) => {
+const Speciescontainer = ({ setFilter, infoDisplay, filter }) => {
 	const handler = useContext(Genomehandler);
 	const sharedGenomes = handler.getShared();
 	const speciesNames = handler.getSpecies();
 	const activeSpecies = handler.getIndeces(); //indeces of the active species
+	const orderedGenomes = handler.getOrdered();
 
-	const [scrollVal, setScrollVal] = useState(10);
+	//const [scrollVal, setScrollVal] = useState(10);
 	const [speciesOut, setSpeciesOut] = useState([]);
-	const [sharedIndeces, setSharedIndeces] = useState([]);
-	const [info, setInfo] = useState();
 
-	const color = randomColor({
-		luminosity: "light",
-		format: "rgb",
-		count: parseInt(filter.maxGenes),
-	});
+	//color schemas
+	const [colorDict, setColorDict] = useState([]);
+	const [currentColorInd, setCurrentColorInd] = useState(0);
+	const [standardColor, setStandardColor] = useState(
+		randomColor({ format: "rgb", count: parseInt(filter.maxGenes) * 4 })
+	);
+
 	//-----------------------------------------------
 
-	const re_arrangeFor = (species) => {};
-	const orderIndeces = (focusedSet) => {
-		//Order the indeces after the focused species.
-
-		//remove genes that arent relevant
-		const sharedGenesOnly = focusedSet.filter();
-		console.log(sharedGenesOnly);
-
-		//get the orderedFile that you added for this specific species.
-
-		const IndecesPairs = [];
-	};
-
+	
 	const swapElem = (array, index1, index2) => {
-		[array[index1], array[index2]] = [array[index2], array[index1]];
+		var temp = array[index1];
+		array[index1] = array[index2];
+		array[index2] = temp;
 	};
 
 	useEffect(() => {
@@ -49,7 +36,10 @@ const Speciescontainer = ({
 			const temp = [];
 			x.forEach((element, index) => {
 				const isActive = element[1];
+
 				if (isActive) {
+					let elem = sharedGenomes[index]
+					
 					temp.push(sharedGenomes[index]);
 				}
 			});
@@ -58,12 +48,10 @@ const Speciescontainer = ({
 		function rdyUp(speciesList) {
 			const listSet = [];
 			let startGene = parseInt(filter.GeneSelected);
-			let speciesSelected = parseInt(filter.SpeciesSelected); // the index on the activeSpeciesList
 			let maxGenes = parseInt(filter.maxGenes);
 
 			for (let index = 0; index < speciesList.length; index++) {
 				const ilement = speciesList[index];
-				const currentSpecies = activeSpecies[index]; // current species Index
 
 				let temp = [];
 				let jndex = startGene;
@@ -75,36 +63,93 @@ const Speciescontainer = ({
 				listSet.push(temp);
 			}
 
-			const sharedInd = new Array();
-
-			// get the shared indeces to later re-arrange when we focus with orderedFile
-			for (let i = startGene; i < startGene + maxGenes; i++) {
-				sharedInd.push(i);
-			}
-
-			setSharedIndeces(sharedInd);
-
-			console.log(activeSpecies);
-			// list of genomes from a species
-			//check if the species is the one thats focused and of it has ordered genes available
-			const isFocus =
-				currentSpecies === parseInt(filter.SpeciesSelected) ? true : false;
-			//arrange the the focused genes in order (remember if they are in different chrm different colors)
-			if (isFocus && orderIndeces[activeSpecies].length > 0) {
-			}
-			// create an indexList after with the same swaps as the focused one!
-
 			return listSet;
 		}
+		//Organize the focused species
+
+		const organizer = (OutArray) => {
+			//get the index for the pillar, which is mathed to the index of the oredered gene list
+
+			let focusedList = OutArray[parseInt(filter.SpeciesSelected)];
+			//get the corresponding gene order list
+			const focusGeneOrder = orderedGenomes[parseInt(filter.SpeciesSelected)];
+
+			const G = [];
+			let G_un = [];
+			focusedList.map((elem, index) => {
+				if (elem !== "---" && elem !== "---\r") {
+					G.push(focusGeneOrder.findIndex((el) => el[0] === elem));
+				}
+				const foundIndex =
+					elem !== "---" && elem !== "---\r"
+						? focusGeneOrder.findIndex((el) => el[0] === elem)
+						: -1;
+				G_un.push(foundIndex);
+			});
+
+			// QuickSort to sort the focused set.
+			const partition = (array, minI, maxI) => {
+				var pivot = array[maxI];
+				let i = minI - 1;
+				for (let j = minI; j <= maxI - 1; j++) {
+					const el = array[j];
+					if (el < pivot) {
+						i += 1;
+						swapElem(array, i, j);
+					}
+				}
+				swapElem(array, i + 1, maxI);
+				return i + 1;
+			};
+			const quickSort = (array, minI, maxI) => {
+				if (minI < maxI) {
+					let partitionI = partition(array, minI, maxI);
+
+					quickSort(array, minI, partitionI - 1);
+					quickSort(array, partitionI + 1, maxI);
+				}
+			};
+			quickSort(G, 0, G.length - 1);
+			// swapping the homologous genes around after the focused order
+			let i = 0;
+			let j = 0;
+			let minQ = G[i];
+			while (j < G_un.length) {
+				if (G_un[j] !== -1) {
+					const ind = G_un.findIndex((elem) => elem === minQ);
+					swapElem(G_un, j, ind);
+					OutArray.forEach((elem) => {
+						swapElem(elem, j, ind);
+					});
+					// swapElem(OutArray,j, ind)
+					i += 1;
+					minQ = G[i];
+				}
+
+				j += 1;
+			}
+		};
 
 		if (speciesNames.length > 0) {
 			const a1 = getActiveSpecies(speciesNames); // get the relevant species selected;
-			const out = rdyUp(a1); // get the species rdy for display, shave away genomes that the speceis do not share
+			
+			let out = rdyUp(a1); // get the species rdy for display, shave away genomes that the speceis do not share
+			if (
+				filter.OrganizeGenes &&
+				orderedGenomes[parseInt(filter.SpeciesSelected)]
+			) {
+				//organize the focused species to ge G
+				organizer(out);
+			}
+			console.log(filter);
 			setSpeciesOut(out);
 		}
 
 		return () => console.log("unmount Container class");
-	}, [speciesNames, filter]);
+	}, [speciesNames, filter, orderedGenomes]);
+	useEffect(()=> {
+		console.log(colorDict);
+	},[colorDict])
 
 	//-----------------------------------------------------------------------------------------------
 
@@ -112,21 +157,30 @@ const Speciescontainer = ({
 		<div className={sps.speciesContainer}>
 			{speciesOut.map((elem, index) => {
 				let speciesInf = handler.getSpecificSpecies(activeSpecies[index]);
+
+				const chosen =
+					index === parseInt(filter.SpeciesSelected) ? true : false;
+				const chosenStyle = chosen ? sps.chosen : "";
+
 				return (
 					<div
 						className={sps.species}
 						key={`s${index}`}>
-						<div className={sps.speciesLabel}>
-							<h3>{speciesInf[0]}</h3>
+						<div className={`${sps.speciesLabel} ${chosenStyle}`}>
+							<h3>
+								{speciesInf[0]}
+								{orderedGenomes[activeSpecies[index]] ? "*" : null}
+							</h3>
 						</div>
 						<Species
 							key={`species${index}`}
 							genes={elem}
-							setFilter={setFilter}
-							infoDisplay={infoDisplayFunction}
+							infoDisplay={infoDisplay}
 							filter={filter}
-							OG={handler.getOrderOf(index)}
-							color={color}
+							OG={orderedGenomes[activeSpecies[index]]}
+							colorDict={colorDict}
+							setColorDict={setColorDict}
+
 						/>
 					</div>
 				);
@@ -135,164 +189,104 @@ const Speciescontainer = ({
 	);
 };
 
-const Species = ({ genes, setFilter, infoDisplay, OG, filter, color }) => {
-	const [relevantIndeces, setRelevantIndeces] = useState([]);
-	useEffect(() => {
-		const setAllIndeces = () => {
-			const sharedGenesOnly = genes.filter(
-				(elem) => elem !== "---" && elem !== "---\r"
-			);
-			console.log(sharedGenesOnly);
-
-			sharedGenesOnly.forEach((elem) => {
-				const isElem = (genomeSet) => genomeSet[0] === elem;
-				const iTemp = OG.findIndex(isElem);
-
-				console.log(iTemp);
-				setRelevantIndeces(iTemp);
-			});
+const Species = ({ genes, colorDict, infoDisplay, OG, filter, setColorDict }) => {
+	const generateColor = (info,index) => {
+		const randomColor = () => {
+			let x = Math.round(0x222222+ 0x666666 * Math.random() ).toString(16);
+			var y = 6 - x.length;
+			var z = "000000";
+			var z1 = z.substring(0, y);
+			return "#" + z1 + x;
 		};
-		if (OG) {
-			setAllIndeces();
-		}
-		return () => console.log("unmount Species Class");
-	}, [OG]);
 
-	const getAreaGenes = (a, b, c) => {
-		return [OG.slice(a, b), OG.slice(b, c)];
+		let chr = info.length > 1 ? info[1] : index ;
+		let newColor = randomColor();
+		
+		if (!OG && info.length < 2 && filter.OrganizeGenes) {
+			chr = -1;
+			newColor = "rgb(0,0,0)"
+		}
+		if (!filter.OrganizeGenes) {
+			chr = index
+		}
+		
+		if (chr in colorDict) {
+			return colorDict[chr];
+		} else {
+			let colorExist = Object.values(colorDict).includes(newColor);
+			while (colorExist) {
+				newColor = randomColor();
+				colorExist = Object.values(colorDict).includes(newColor);
+
+			}
+			
+			setColorDict((exist) =>{return { ...exist, [chr]: newColor }});
+			return newColor;
+		}
 	};
 
 	return (
-		<div className={sps.species_container}>
-			{genes.map((elem, index) => (
-				<Genome
-					gene={elem}
-					key={index}
-					color={color[index]}
-					infoDisplay={infoDisplay}
-					allIndeces={relevantIndeces}
-				/>
-			))}
+		<div className={`${sps.species_container} `}>
+			{genes.map((elem, index) => {
+				let details;
+				if (OG && filter.OrganizeGenes) {
+					// console.log(OG[OG.findIndex(el=> el[0] ===elem)]);
+
+					if (elem !== "---" && elem !== "---\r") {
+						const indexOfgene = OG.findIndex((el) => el[0] === elem);
+						details = OG[indexOfgene];
+					} else {
+						details = undefined;
+					}
+				}
+				const chosen = filter.ge
+				const tempInfo = details ? details : [elem];
+				const colorOut = generateColor(tempInfo,index)
+				return (
+					<Gene
+						key={index}
+						color={colorOut}
+						infoDisplay={infoDisplay}
+						geneInfo={tempInfo}
+					/>
+				);
+			})}
 		</div>
 	);
 };
 
-function Genome({ gene, color, infoDisplay, allIndeces }) {
+function Gene({ geneInfo, color, infoDisplay }) {
 	const [out, setOut] = useState();
+	
 	useEffect(() => {
-		if (gene.length > 0) {
-			gene !== "---" && gene !== "---\r"
-				? setOut(
-						<button
-							className={sps.genome}
-							style={{ backgroundColor: color }}
-							onClick={infoDisplay()}>
-							<p>{gene}</p>
-						</button>
-				  )
+		if (geneInfo.length > 0) {
+			geneInfo[0] !== "---" && geneInfo[0] !== "---\r"
+				? setOut(() => {
+						const geneChro = geneInfo.length > 1 ? geneInfo[1] : "";
+						return (
+							<button
+								className={sps.genome}
+								style={{ backgroundColor: color }}
+								onClick={async () => {
+									const information = geneInfo;
+									await infoDisplay(information, true);
+								}}>
+								<div>
+									<p className="chr">{geneChro}</p>
+									<p>{geneInfo[0]}</p>
+								</div>
+							</button>
+						);
+				  })
 				: setOut(
 						<div
 							className={sps.genome}
 							style={{ backgroundColor: "rgba(0,0,0,0.1)" }}></div>
 				  );
 		}
-	}, [gene]);
+	}, [geneInfo]);
 
 	return <div>{out}</div>;
 }
 
 export default Speciescontainer;
-
-class Node {
-	constructor(val) {
-		this.value = val;
-		this.left = null;
-		this.right = null;
-	}
-}
-
-class BST {
-	constructor() {
-		this.root = null;
-	}
-	insert(val) {
-		const node = Node(val);
-		this.root == null ? (this.root = node) : insertNode(this.root, node);
-	}
-	insertNode(n, newNode) {
-		if (n.value < newNode.value) {
-			n.left === null ? (n.left = newNode) : this.insertNode(n.left, newNode);
-		} else {
-			n.right === null
-				? (n.right = newNode)
-				: this.insertNode(n.right, newNode);
-		}
-	}
-	remove(val) {
-		this.root = this.removeNode(this.root, val);
-	}
-	removeNode(n, k) {
-		if (n === null) {
-			return null;
-		} else if (k < n.value) {
-			n.left = this.removeNode(n.left, k);
-			return n;
-		} else if (k > n.value) {
-			n.right = this.removeNode(n.right, k);
-			return n;
-		} else {
-			if (n.left === null && n.right === null) {
-				n = null;
-				return n;
-			}
-			if (n.left === null) {
-				n = n.right;
-				return n;
-			} else if (n.right === null) {
-				n = n.left;
-				return n;
-			}
-			const minRight = this.findMinNode(n.right);
-			n.value = minRight.value;
-			n.right = this.removeNode(n.right, minRight.value);
-			return n;
-		}
-	}
-	findMinNode(node) {
-		if (node.left === null) {
-			return node;
-		} else {
-			return this.findMinNode(node.left);
-		}
-	}
-
-	getRootNode() {
-		return this.root;
-	}
-
-	inorder(node) {
-		if (node !== null) {
-			return this.inorder(node.left) + node.value + this.inorder(node.right);
-		} else {
-			return null;
-		}
-	}
-
-	preorder(node) {
-		if (node !== null) {
-			return node + this.preorder(this.left) + this.preorder(this.right);
-		} else {
-			return null;
-		}
-	}
-
-	postorder(node) {
-		if (node !== null) {
-			return (
-				this.postorder(node.left) + this.postorder(node.right) + node.value
-			);
-		} else {
-			return null;
-		}
-	}
-}

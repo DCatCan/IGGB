@@ -87,6 +87,16 @@ function FormFilter({ geneFilter, setFilter }) {
 						className={sps.maxOutput}
 					/>
 				</div>
+				<div className={sps.organize}>
+					<label htmlFor="OrganizeGenes">Order Genes</label>
+					<input
+						type="checkbox"
+						name="OrganizeGenes"
+						id="OrganizeGenes"
+						value={false}
+						onChange={(e) => e.target.value = e.target.checked ? true : false }
+					/>
+				</div>
 
 				<div className={sps.SpeciesSelected}>
 					<label htmlFor="SpeciesSelected">Focus Species:</label>

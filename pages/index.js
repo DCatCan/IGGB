@@ -6,27 +6,40 @@ import Filter from "@/components/Filter";
 
 export default function Home() {
 	const handler = useContext(Genomehandler);
+	const infoLabels = [
+		"NAME",
+		"CHROMOSOME/CONTIG/SCAFFOLD NUMBER",
+		"ORIENTATION",
+		"POSITION",
+		"COORDINATES",
+		"START COORDINATE",
+		"STOP COORDINATE",
+		"ON/OFF",
+		"SHORT NAME",
+		"NOTES",
+	];
 	const [geneFilter, setGeneFilter] = useState({
-		maxGenes: 5,
+		maxGenes: 15,
+		OrganizeGenes: "false",
 		SpeciesSelected: 0,
 		GeneSelected: 0,
 	});
 
-	const [info, setInfo] = useState();
+	const [info, setInfo] = useState(null);
 
-	const handleGeneButton = (information, boolVar) => {
-		//temp, fix it back!
-
+	const handleGeneButton = async (information, boolVar) => {
 		if (boolVar) {
 			setInfo(
 				<div className={`${sps["GenInfo"]}`}>
-					{information.map((elem, i) => {
-						return (
-							<p key={i}>
-								{infoLabels[i]} = {elem}
-							</p>
-						);
-					})}
+					<div>
+						{information.map((elem, i) => {
+							return (
+								<p key={i}>
+									{infoLabels[i]} = {elem}
+								</p>
+							);
+						})}
+					</div>
 					<button
 						onClick={() => {
 							setInfo();
@@ -39,8 +52,6 @@ export default function Home() {
 			setInfo();
 		}
 	};
-
-	
 
 	return (
 		<div className={sps.container}>
@@ -57,16 +68,3 @@ export default function Home() {
 		</div>
 	);
 }
-
-const infoLabels = [
-	"Position",
-	"NAME",
-	"ORIENTATION",
-	"START COORDINATE",
-	"STOP COORDINATE",
-	"ON/OFF",
-	"CHROMOSOME/CONTIG/SCAFFOLD NUMBER",
-	"SHORT NAME",
-	"COORDINATES",
-	"NOTES",
-];
