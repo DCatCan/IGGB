@@ -4,6 +4,7 @@ import { createContext, useState } from "react";
 export const Genomehandler = createContext(null);
 
 function Genecontext({ children }) {
+	//species has [name, ifActive, hasOrderFile, shared/orderIndex]
 	const [species, setSpecies] = useState(new Array());
 	const [sharedGenomes, setSharedGenomes] = useState(new Array());
 	const [orderedGenomes, setOrderGenomes] = useState(new Array());
@@ -70,7 +71,7 @@ function Genecontext({ children }) {
 			return orderedGenomes[x];
 		},
 		getGenomeSet: (x) => {
-			return sharedGenomes[x];
+			return sharedGenomes[x] ? sharedGenomes[x] : [];
 		},
 		setSpeciesInfo: (x) => {
 			setSpecies(x);

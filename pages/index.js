@@ -19,13 +19,25 @@ export default function Home() {
 		"NOTES",
 	];
 	const [geneFilter, setGeneFilter] = useState({
-		maxGenes: 15,
-		OrganizeGenes: "false",
-		SpeciesSelected: 0,
-		GeneSelected: 0,
+		maxGenes: handler.getGenomeSet(0).length < 10 ? handler.getGenomeSet(0).length : 10,
+		OrganizeGenes: 0,
+		SpeciesSelected: "0",
+		GeneSelected: "0",
 	});
 
+
 	const [info, setInfo] = useState(null);
+	const handleFilter = (e) => {
+		e.preventDefault();
+		for (let index = 0; index < e.target.length; index++) {
+			const { name, value } = e.target[index];
+
+			setGeneFilter((existing) => {
+				return { ...existing, [name]: value };
+			});
+		}
+
+	}
 
 	const handleGeneButton = async (information, boolVar) => {
 		if (boolVar) {
@@ -63,7 +75,7 @@ export default function Home() {
 			/>
 			<Filter
 				geneFilter={geneFilter}
-				setFilter={setGeneFilter}
+				handleSubmit={handleFilter}
 			/>
 		</div>
 	);

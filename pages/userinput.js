@@ -43,7 +43,7 @@ const Userinput = () => {
 				onSubmit={handleSpeciesSubmit}>
 				<div className={is.input_container}>
 					<div className={is.square}>
-						<h2>Shared Input</h2>
+						<h2>Pillar File</h2>
 						<input
 							type="file"
 							name="sharedRef"
@@ -52,7 +52,8 @@ const Userinput = () => {
 						/>
 					</div>
 					<div className={is.square}>
-						<h2>Ordered Input</h2>
+						<h2>Ordered File/Files</h2><br />
+						<p>Multiple files allowed at a time</p>
 						<input
 							type="file"
 							name="orderRef"
@@ -60,11 +61,6 @@ const Userinput = () => {
 							multiple={true}
 							onChange={(e) => handler.setOrder(e)}
 						/>
-						<p>
-							Species Order still in progress...
-							<br />
-							Not yet functional
-						</p>
 					</div>
 				</div>
 				<div className={is.genedisplay}>
