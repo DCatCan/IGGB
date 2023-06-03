@@ -5,23 +5,9 @@ import is from "@/styles/Inputs.module.css";
 
 const Userinput = () => {
 	const handler = useContext(Genomehandler);
-	const [speciesInfo, setSpeciesInfo] = useState([]);
-	const [activeIndeces, setActiveIndeces] = useState([]);
+	const [speciesInfo, setSpeciesInfo] = useState(handler.getSpecies());
 	const router = useRouter();
-
-	useEffect(() => {
-		const handleSpecies = (x) => {
-			setSpeciesInfo(x);
-		};
-		if (handler.getShared().length > 0) {
-			handleSpecies(handler.getSpecies());
-		}
-	}, [handler.getShared()]);
-
-	useEffect(() => {
-		if (handler.getShared().length > 0) {
-		}
-	}, [handler.getOrdered()]);
+	const [positive,setPositive] = useState(true)
 
 	const handleSpeciesSubmit = (e) => {
 		e.preventDefault();
@@ -36,6 +22,18 @@ const Userinput = () => {
 		setSpeciesInfo([]);
 	};
 
+	const handlePillars = (e) => {
+		handler.setShared(e)
+		setPositive(false)
+		
+	}
+	useEffect(()=> {
+		setSpeciesInfo(handler.getSpecies())
+
+
+
+	},[handler.getSpecies()])
+
 	return (
 		<>
 			<form
@@ -48,11 +46,12 @@ const Userinput = () => {
 							type="file"
 							name="sharedRef"
 							id="sharedInput"
-							onChange={(e) => handler.setShared(e)}
+							onChange={handlePillars}
 						/>
 					</div>
 					<div className={is.square}>
-						<h2>Ordered File/Files</h2><br />
+						<h2>Ordered File/Files</h2>
+						<br />
 						<p>Multiple files allowed at a time</p>
 						<input
 							type="file"
@@ -60,6 +59,7 @@ const Userinput = () => {
 							id="orderInput"
 							multiple={true}
 							onChange={(e) => handler.setOrder(e)}
+							disabled={positive}
 						/>
 					</div>
 				</div>
@@ -118,7 +118,6 @@ function SpeciesName({ index, speciesInfo, setSpeciesInfo }) {
 				...existingItems.slice(index + 1),
 			];
 		});
-		
 	};
 
 	return (

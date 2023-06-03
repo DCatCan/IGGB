@@ -47,7 +47,6 @@ const Speciescontainer = ({ setFilter, infoDisplay, filter }) => {
 
 	function getActiveSpecies(x) {
 		//picks out the species that were chosen
-		console.log(x);
 		const temp = [];
 		x.forEach((element, index) => {
 			const isActive = element[1];
@@ -66,7 +65,6 @@ const Speciescontainer = ({ setFilter, infoDisplay, filter }) => {
 		let focusedList = OutArray[parseInt(filter.SpeciesSelected)];
 		//get the corresponding gene order list
 		const focusGeneOrder = orderedGenomes[parseInt(filter.SpeciesSelected)];
-		console.log(focusGeneOrder);
 
 		const G = [];
 		let G_un = [];
@@ -82,13 +80,10 @@ const Speciescontainer = ({ setFilter, infoDisplay, filter }) => {
 		});
 
 		// QuickSort to sort the focused set.
-		console.log(G);
 		quickSort(G, 0, G.length - 1);
 		
 		// swapping the homologous genes around after the focused order
-		console.log(G_un);
 		orderRest(OutArray, G, G_un);
-		console.log(G_un);
 	};
 	const setInfo = (elem, OG) => {
 		let details;
@@ -113,11 +108,13 @@ const Speciescontainer = ({ setFilter, infoDisplay, filter }) => {
 			organizer(temp);
 		}
 		setOut(temp);
+		console.log(orderedGenomes);
+
 
 		return () => {
-			console.log(filter);
 		};
 	}, [filter]);
+
 
 	//-----------------------------------------------------------------------------------------------
 

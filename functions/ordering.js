@@ -69,7 +69,6 @@ function prepare(speciesList, filter) {
 	let startOffset = Math.floor(parseInt(filter.maxGenes)/2);
 
 	let startGene = parseInt(filter.GeneSelected) < maxGenes ? 0 : parseInt(filter.GeneSelected)-startOffset;
-	console.log(`startgene :${startGene}`);
 
 	for (let index = 0; index < speciesList.length; index++) {
 		const ilement = speciesList[index];

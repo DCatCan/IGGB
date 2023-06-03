@@ -1,5 +1,5 @@
 import Layout from "@/components/Layout";
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 
 export const Genomehandler = createContext(null);
 
@@ -41,15 +41,27 @@ function Genecontext({ children }) {
 			});
 			const temp = [...orderedGenomes];
 			if (index !== -1) {
-				setOrderGenomes((existing) => [
-					...existing.slice(0, index),
-					(existing[index] = res),
-					...existing.slice(index + 1),
-				]);
+				// setOrderGenomes((existing) => [
+				// 	...existing.slice(0, index),
+				// 	(existing[index] = res),
+				// 	...existing.slice(index + 1),
+				// ]);
+				setOrderGenomes(existing => existing[index] = res)
 			}
 		};
 		reader.readAsText(theFiles);
 	};
+
+	useEffect(()=> {
+		setOrderGenomes(new Array(sharedGenomes.length))
+
+
+	},[sharedGenomes])
+	useEffect(()=> {
+		console.log(orderedGenomes);
+
+
+	},[orderedGenomes])
 
 	const handler = {
 		getSpecies: () => {
