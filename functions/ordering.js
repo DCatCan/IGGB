@@ -69,14 +69,14 @@ function prepare(speciesList, filter) {
 	let startOffset = Math.floor(parseInt(filter.maxGenes)/2);
 
 	let startGene = parseInt(filter.GeneSelected) < maxGenes ? 0 : parseInt(filter.GeneSelected)-startOffset;
-
+	console.log(maxGenes);
 	for (let index = 0; index < speciesList.length; index++) {
-		const ilement = speciesList[index];
+		const ilement = speciesList[index];console.log(ilement);
 
 		let temp = [];
 		let jndex = startGene;
 
-		while (temp.length < maxGenes+1) {
+		while (temp.length < maxGenes) {
 			temp.push(ilement[jndex]);
 			jndex++;
 		}

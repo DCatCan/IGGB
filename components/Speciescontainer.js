@@ -15,9 +15,7 @@ const Speciescontainer = ({ setFilter, infoDisplay, filter }) => {
 	const activeSpecies = handler.getIndeces(); //indeces of the active species
 	const orderedGenomes = handler.getOrdered();
 
-	// const [out, setOut] = useState(
-	// 	prepare(getActiveSpecies(speciesNames), filter)
-	// );
+	//genes going out
 	const [out, setOut] = useState([]);
 	//color schemas
 	const [colorDict, setColorDict] = useState([]);
@@ -108,7 +106,6 @@ const Speciescontainer = ({ setFilter, infoDisplay, filter }) => {
 			organizer(temp);
 		}
 		setOut(temp);
-		console.log(orderedGenomes);
 
 
 		return () => {
@@ -137,7 +134,7 @@ const Speciescontainer = ({ setFilter, infoDisplay, filter }) => {
 							</h3>
 						</div>
 						<div className={`${sps.species_container} `}>
-							{speciesGenes.map((gene, ind) => {
+							{speciesGenes ? (speciesGenes.map((gene, ind) => {
 								const tempInfo = setInfo(gene, OG);
 								return (
 									<Gene
@@ -149,7 +146,7 @@ const Speciescontainer = ({ setFilter, infoDisplay, filter }) => {
 										infoDisplay={infoDisplay}
 									/>
 								);
-							})}
+							})) : console.log(speciesGenes)}
 						</div>
 						{/* <Species
 							key={`species${index}`}

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Genomehandler } from "@/context/GenomeHandler";
 import { useRouter } from "next/router";
 import is from "@/styles/Inputs.module.css";
@@ -7,7 +7,11 @@ const Userinput = () => {
 	const handler = useContext(Genomehandler);
 	const [speciesInfo, setSpeciesInfo] = useState(handler.getSpecies());
 	const router = useRouter();
-	const [positive,setPositive] = useState(true)
+	const [positive, setPositive] = useState(
+		handler.getSpecies().length > 0 ? false : true
+	);
+	const pillarRef = useRef(null);
+	const orderRef = useRef(null);
 
 	const handleSpeciesSubmit = (e) => {
 		e.preventDefault();
@@ -16,23 +20,22 @@ const Userinput = () => {
 		router.push("/");
 	};
 
-	const handleClear = (e) => {
-		e.preventDefault();
+	const handleClear = () => {
 		handler.clearShared();
+		pillarRef.current.value = null;
+		orderRef.current.value = null;
+		setPositive(true);
 		setSpeciesInfo([]);
 	};
 
 	const handlePillars = (e) => {
-		handler.setShared(e)
-		setPositive(false)
-		
-	}
-	useEffect(()=> {
-		setSpeciesInfo(handler.getSpecies())
-
-
-
-	},[handler.getSpecies()])
+		speciesInfo.length > 0 ? handleClear() : null;
+		handler.setShared(e);
+		setPositive(false);
+	};
+	useEffect(() => {
+		setSpeciesInfo(handler.getSpecies());
+	}, [handler.getSpecies()]);
 
 	return (
 		<>
@@ -43,6 +46,7 @@ const Userinput = () => {
 					<div className={is.square}>
 						<h2>Pillar File</h2>
 						<input
+							ref={pillarRef}
 							type="file"
 							name="sharedRef"
 							id="sharedInput"
@@ -54,6 +58,7 @@ const Userinput = () => {
 						<br />
 						<p>Multiple files allowed at a time</p>
 						<input
+							ref={orderRef}
 							type="file"
 							name="orderRef"
 							id="orderInput"
@@ -73,7 +78,12 @@ const Userinput = () => {
 						}
 					</div>
 					<div className={is.buttonContainer}>
-						<button onClick={handleClear}>Clear</button>
+						<button
+							onClick={(e) => {
+								e.preventDefault(), handleClear();
+							}}>
+							Clear
+						</button>
 						<button type="submit">Submit</button>
 					</div>
 				</div>

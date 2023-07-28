@@ -66,6 +66,7 @@ function FormFilter({ geneFilter, setFilter }) {
 						name="maxGenes"
 						id="maxGenes"
 						min={1}
+						max={handler.getGenomeSet(0).length}
 						defaultValue={geneFilter.maxGenes}
 						className={sps.maxOutput}
 					/>

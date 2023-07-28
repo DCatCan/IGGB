@@ -46,22 +46,18 @@ function Genecontext({ children }) {
 				// 	(existing[index] = res),
 				// 	...existing.slice(index + 1),
 				// ]);
-				setOrderGenomes(existing => existing[index] = res)
+				setOrderGenomes((existing) => (existing[index] = res));
 			}
 		};
 		reader.readAsText(theFiles);
 	};
 
-	useEffect(()=> {
-		setOrderGenomes(new Array(sharedGenomes.length))
-
-
-	},[sharedGenomes])
-	useEffect(()=> {
-		console.log(orderedGenomes);
-
-
-	},[orderedGenomes])
+	useEffect(() => {
+		setOrderGenomes(new Array(sharedGenomes.length));
+	}, [sharedGenomes]);
+	useEffect(() => {
+		// console.log(orderedGenomes);
+	}, [orderedGenomes]);
 
 	const handler = {
 		getSpecies: () => {
@@ -90,6 +86,7 @@ function Genecontext({ children }) {
 		},
 		clearShared: () => {
 			setSharedGenomes([]);
+			setOrderGenomes([]);
 			setSpecies([]);
 			setActiveIndeces([]);
 		},
@@ -109,13 +106,13 @@ function Genecontext({ children }) {
 				);
 				const sharedGenomes = [];
 				for (let i = 0; i < res[0].length; i++) {
-					const temp = [];
-					temp.push(
+					sharedGenomes.push(
 						res.map((elem) => {
-							return elem[i];
+							const reg = /[^\r]/g;
+							const element = String(elem[i]).match(reg).join("");
+							return element;
 						})
 					);
-					sharedGenomes.push(temp.flat());
 				}
 
 				setSharedGenomes(sharedGenomes);
