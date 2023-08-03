@@ -1,3 +1,5 @@
+
+
 const swapElem = (array, index1, index2) => {
 	var temp = array[index1];
 	array[index1] = array[index2];
@@ -66,12 +68,12 @@ const randomColor = () => {
 function prepare(speciesList, filter) {
 	const listSet = [];
 	let maxGenes = parseInt(filter.maxGenes);
-	let startOffset = Math.floor(parseInt(filter.maxGenes)/2);
+	let startOffset = Math.floor(maxGenes/2);
 
 	let startGene = parseInt(filter.GeneSelected) < maxGenes ? 0 : parseInt(filter.GeneSelected)-startOffset;
-	console.log(maxGenes);
+	// console.log(maxGenes);
 	for (let index = 0; index < speciesList.length; index++) {
-		const ilement = speciesList[index];console.log(ilement);
+		const ilement = speciesList[index];
 
 		let temp = [];
 		let jndex = startGene;
@@ -87,7 +89,7 @@ function prepare(speciesList, filter) {
 	return listSet;
 }
 
-const orderRest = (OutArray,focusOrdered,unOrderedList) => {
+const orderRest =async (OutArray,focusOrdered,unOrderedList) => {
 	let i = 0;
 	let j = 0;
 	let minQ = focusOrdered[i];
@@ -105,6 +107,7 @@ const orderRest = (OutArray,focusOrdered,unOrderedList) => {
 
 		j += 1;
 	}
+	console.log(OutArray);
 };
 
 export { quickSort, randomColor, prepare, orderRest };

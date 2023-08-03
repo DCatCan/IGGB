@@ -5,13 +5,14 @@ import arrow from "@/public/down-arrow.png";
 import { Input } from "postcss";
 import { Genomehandler } from "@/context/GenomeHandler";
 
-function Filter({ geneFilter, handleSubmit }) {
+function Filter({ geneFilter, handleSubmit, setpressed, pressed }) {
 	const [active, setActive] = useState(false);
 	const ContainerClass = active ? sps.hide : null;
 	const buttonClass = active ? sps.up : null;
 	const handleHide = () => {
 		setActive(!active);
 	};
+
 
 	return (
 		<div className={`${ContainerClass} ${sps.filterContainer}`}>
@@ -29,18 +30,21 @@ function Filter({ geneFilter, handleSubmit }) {
 				<FormFilter
 					geneFilter={geneFilter}
 					setFilter={handleSubmit}
+					setpressed={setpressed}
+					pressed={pressed}
 				/>
 			}
 		</div>
 	);
 }
 
-function FormFilter({ geneFilter, setFilter }) {
+function FormFilter({ geneFilter, setFilter, setpressed, pressed }) {
 	const handler = useContext(Genomehandler);
 	const tracks = handler.getShared()
+
 	const [genes, setGenes] = useState(handler.getGenomeSet(parseInt(geneFilter.GeneSelected)))
 
-	
+
 
 	const species = handler.getSpecies();
 	const activeSpecies = species.filter((elem) => elem[1]);
@@ -48,17 +52,29 @@ function FormFilter({ geneFilter, setFilter }) {
 	const handleSpeciesChange = (e) => {
 		const { value } = e.target;
 		setGenes(tracks[value]);
-		console.log(`speciesVal: ${tracks[value]}`);
+		document.getElementById("GeneSelected").value = -1
+
 	}
 	const handleChange = (e) => {
-		console.log(e.target.value);
+		const a = document.getElementById("GeneSelected").options
+		const b = Array.from(a).filter(option => option.value === e.target.value);
+		document.getElementById("focusName").value = b[0].text;
+
+
+	}
+	const handleSubmit = (e) => {
+		setFilter(e)
+		setpressed(pressed + 1)
 	}
 
 	return (
 		<>
 			<form
 				className={sps.filterForm}
-				onSubmit={setFilter}>
+				onSubmit={(e) => {
+					setFilter(e)
+					setpressed(pressed + 1)
+				}}>
 				<div className={sps.maxGenes}>
 					<label htmlFor="maxGenes">Max. Output</label>
 					<input
@@ -88,14 +104,17 @@ function FormFilter({ geneFilter, setFilter }) {
 						name="SpeciesSelected"
 						id="SpeciesSelected"
 						className={sps.SpeciesSelected}
-						onChange={handleSpeciesChange}>
+						onChange={handleSpeciesChange} defaultValue={-1}>
+						<option
+							value={-1}>
+							---
+						</option>
 						{activeSpecies.map((elem, index) => {
 							return (
 								<option
 									value={elem[3]}
-									key={`SpeciesSel${index}`}>
-									{elem[0]}
-								</option>
+									key={`SpeciesSel${index}`} label={elem[0]} />
+
 							);
 						})}
 					</select>
@@ -104,22 +123,29 @@ function FormFilter({ geneFilter, setFilter }) {
 					<label htmlFor="GeneSelected">Gene To focus</label>
 					<select
 						name="GeneSelected"
-						id="GeneSelected" onChange={handleChange}>
-						{genes.map((elem, index) => 
+						id="GeneSelected" onChange={handleChange} defaultValue={-1}>
+						<option
+							value={-1}>
+							---
+						</option>						{genes.map((elem, index) =>
 							elem !== "---" && elem !== "---\r" ? (
 								<option
 									value={index}
 									key={`GeneSelected${index}`}>
 									{elem}
 								</option>
+
 							) : null
 						)}
 					</select>
+
 				</div>
+				<input type="hidden" name="focusName" id="focusName"></input>
+
 
 				<button
 					type="submit"
-					className={sps.filterSubmit}>
+					className={sps.filterSubmit} id="filterSubmit">
 					Filter
 				</button>
 			</form>

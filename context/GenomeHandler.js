@@ -20,7 +20,7 @@ function Genecontext({ children }) {
 				return -1;
 			}
 			element[2] = true;
-			console.log(element);
+			// console.log(element);
 			setSpecies((existing) => [
 				...existing.slice(0, i),
 				element,
@@ -153,7 +153,6 @@ function Genecontext({ children }) {
 				const elem = theFiles[index];
 				readF(elem);
 			}
-			console.log(orderedGenomes);
 
 			// if (theFiles.length > 1) {
 			// 	for (let ind = 0; ind < theFiles.length; ind++) {
