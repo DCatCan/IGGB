@@ -15,3 +15,10 @@ creation of a gene browser with user friendly features for
 visualizing genetic information. The tool would offer
 flexibility and usability for bioinformatics and scientists to
 take advantage of.
+
+
+You can use the demo by going into:
+
+https://kandidat-exam.vercel.app/
+
+download the data folder in this repository and upload the corresponding files to the site.
