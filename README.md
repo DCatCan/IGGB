@@ -21,4 +21,6 @@ You can use the demo by going into:
 
 https://kandidat-exam.vercel.app/
 
-download the data folder in this repository and upload the corresponding files to the site.
+How to use:
+
+Download the data folder in this repository. From there you could use any file on the different folders to compare in the site.
